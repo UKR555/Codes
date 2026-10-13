@@ -1,40 +1,54 @@
-// class Solution {
-//     public int[] topKFrequent(int[] nums, int k) {
-//         ArrayList<Integer> li = new ArrayList<>();
-//         for(int i=0;i<nums.length;i++){
-//             if(nums[i]==nums[i+1]){
-//                 continue;
-//             }
-//             if(nums[i]-nums[i-1]==-1){
-                
-//                 li.add(nums[i]);
-//             }
-//         }
-//         return new int[li];
-//     }
-// }
-
-
-import java.util.*;
-
 class Solution {
+
     public int[] topKFrequent(int[] nums, int k) {
+
+        int n = nums.length;
+
+        // Step 1: Count frequency of each number
         HashMap<Integer, Integer> map = new HashMap<>();
 
         for (int num : nums) {
             map.put(num, map.getOrDefault(num, 0) + 1);
         }
 
-        ArrayList<Integer> li = new ArrayList<>(map.keySet());
+        // bucket[i] stores numbers having frequency i
+        List<Integer>[] bucket = new ArrayList[n + 1];
 
-        li.sort((a, b) -> map.get(b) - map.get(a));
+        // Step 2: Place numbers into their frequency bucket
+        for (int key : map.keySet()) {
 
-        int[] result = new int[k];
+            int freq = map.get(key);
 
-        for (int i = 0; i < k; i++) {
-            result[i] = li.get(i);
+            // Create list if bucket is empty
+            if (bucket[freq] == null) {
+                bucket[freq] = new ArrayList<>();
+            }
+
+            // Add number into its frequency bucket
+            bucket[freq].add(key);
         }
 
-        return result;
+        int[] ans = new int[k];
+        int index = 0;
+
+        // Step 3: Traverse from highest frequency bucket
+        for (int i = bucket.length - 1; i >= 0 && index < k; i--) {
+
+            // Skip empty buckets
+            if (bucket[i] != null) {
+
+                // Take all numbers from current bucket
+                for (int num : bucket[i]) {
+
+                    ans[index++] = num;
+
+                    // Stop once k elements are collected
+                    if (index == k)
+                        break;
+                }
+            }
+        }
+
+        return ans;
     }
 }
